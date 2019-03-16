@@ -1,0 +1,58 @@
+<project name="imageTile" basedir=".">
+
+  <property name="release.dir" value="release"/>
+  <property name="release.zip" value="release.zip"/>
+  <property name="nwjs-base.dir" value="nwjs-base"/>
+
+  <target name="clean">
+    <delete dir="${release.dir}"/>
+  </target>
+
+  <target name="init" depends="clean">
+    <mkdir dir="${release.dir}"/>
+  </target>
+
+  <target name="build" depends="init">
+    <copy todir="${release.dir}">
+      <fileset dir=".">
+        <exclude name="build.xml"/>
+        <exclude name="image Tile.cmd"/>
+        <exclude name="readme.md"/>
+        <exclude name="tests/**/*"/>
+        <exclude name="promotion/**/*"/>
+        <exclude name=".git/**/*"/>
+        <exclude name="nwjs-base/**/*"/>
+        <exclude name="imageTile/**/*"/>
+        <exclude name="imageTile.zip"/>
+        <exclude name="${release.zip}"/>
+        <exclude name="${release.dir}/**/*"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="zip" depends="build">
+    <zip destfile="${release.zip}" basedir="${release.dir}"/>
+  </target>
+
+  <target name="build-nwjs" depends="build">
+    <mkdir dir="imageTile"/>
+
+    <copy todir="imageTile">
+      <fileset dir="${nwjs-base.dir}">
+        <include name="**/*"/>
+      </fileset>
+    </copy>
+    <copy todir="imageTile">
+      <fileset dir="${release.dir}">
+        <include name="**/*"/>
+      </fileset>
+    </copy>
+
+    <move file="imageTile/nw.exe" tofile="imageTile/image Tile.exe"/>
+
+    <zip destfile="imageTile.zip" basedir="imageTile"/>
+
+    <delete dir="imageTile"/>
+  </target>
+
+</project>

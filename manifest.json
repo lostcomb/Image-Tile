@@ -1,0 +1,24 @@
+{
+  "name": "image Tile",
+  "description": "This program allows you to make collages of images in a grid format, with varying size borders.",
+  "version": "1.1.1",
+  "manifest_version": 2,
+  "offline_enabled": true,
+  "app": {
+    "background": {
+      "scripts": [
+        "launch.js"
+      ]
+    }
+  },
+  "icons": {
+    "32": "icons/Icon-32.png",
+    "64": "icons/Icon-64.png",
+    "128": "icons/Icon-128.png",
+    "256": "icons/Icon-256.png"
+  },
+  "permissions": [
+    "storage",
+    {"fileSystem": ["write"]}
+  ]
+}

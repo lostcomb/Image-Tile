@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Image Tile</title>
+    <link type="text/css" rel="stylesheet" href="style.css">
+    <script type="text/javascript" src="controller/Controller.js"></script>
+    <script type="text/javascript" src="model/Group.js"></script>
+    <script type="text/javascript" src="model/ImageData.js"></script>
+    <script type="text/javascript" src="model/Model.js"></script>
+    <script type="text/javascript" src="model/Rect.js"></script>
+    <script type="text/javascript" src="model/enums/Orientation.js"></script>
+    <script type="text/javascript" src="model/enums/ImageFit.js"></script>
+    <script type="text/javascript" src="view/ProgressView.js"></script>
+    <script type="text/javascript" src="view/ContentView.js"></script>
+    <script type="text/javascript" src="view/SettingsView.js"></script>
+    <script type="text/javascript" src="view/customSizeView.js"></script>
+    <script type="text/javascript" src="view/ErrorView.js"></script>
+    <script type="text/javascript" src="view/SelectedActionView.js"></script>
+    <script type="text/javascript" src="defaults.js"></script>
+    <script type="text/javascript" src="Main.js"></script>
+  </head>
+  <body>
+
+    <!-- Top Bar -->
+    <div class="title title-color">
+
+      <!-- Menu Icon -->
+      <div id="menu" class="material-cont action">
+        <i class="material-icons md-24 md-light">menu</i>
+      </div>
+
+      <!-- Title Text -->
+      <span>
+        Edit View
+      </span>
+
+      <!-- Actions -->
+      <div class="actions">
+        <!-- Dynamic Actions for when a tile is selected -->
+        <div id="dyn-act-cont">
+          <!-- Join Action -->
+          <div id="join" class="material-cont action" title="join selection">
+            <i class="material-icons md-24 md-light">call_merge</i>
+          </div>
+          <!-- Split Action -->
+          <div id="split" class="material-cont action" title="split selection">
+            <i class="material-icons md-24 md-light">call_split</i>
+          </div>
+          <!-- Choose Image Action -->
+          <div id="choose-image" class="material-cont action" title="choose image">
+            <span id="image-progress" class="progress"></span>
+            <i class="material-icons md-24 md-light">image</i>
+          </div>
+          <!-- Crop Scale Action -->
+          <div class="input" title="image scale">
+            <input id="crop-scale" type="range" value="0">
+          </div>
+          <!-- Crop Scale Readout -->
+          <div id="crop-readout" class="material-cont" title="current crop scale">
+            100%
+          </div>
+          <!-- Image Fit Action -->
+          <div class="input" title="image fit">
+            <select id="image-fit"></select>
+          </div>
+          <!-- Image Rotation Action -->
+          <div class="input" title="image rotation">
+            <input id="image-rotation" type="number" min="-359" max="359">
+            <p>&deg;</p>
+          </div>
+        </div>
+        <!-- Undo Action -->
+        <div id="undo" class="material-cont action disabled" title="undo">
+          <i class="material-icons md-24 md-light">undo</i>
+        </div>
+        <!-- Redo Action -->
+        <div id="redo" class="material-cont action disabled" title="redo">
+          <i class="material-icons md-24 md-light">redo</i>
+        </div>
+        <!-- Load Action -->
+        <div id="load" class="material-cont action" title="load state">
+          <span id="load-progress" class="progress"></span>
+          <i class="material-icons md-24 md-light">folder_open</i>
+        </div>
+        <!-- Save Action -->
+        <div id="save" class="material-cont action" title="save state (right click for save as)">
+          <span id="save-progress" class="progress"></span>
+          <i class="material-icons md-24 md-light">save</i>
+        </div>
+        <!-- Export Action -->
+        <div id="export" class="material-cont action" title="download image">
+          <span id="export-progress" class="progress"></span>
+          <i class="material-icons md-24 md-light">file_download</i>
+        </div>
+        <!-- Print Action -->
+        <div id="print" class="material-cont action" title="print image">
+          <i class="material-icons md-24 md-light">print</i>
+        </div>
+        <!-- Discard Action -->
+        <div id="discard" class="material-cont action" title="discard image">
+          <i class="material-icons md-24 md-light">delete</i>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Side Bar -->
+    <div class="sidebar sidebar-color open">
+
+      <!-- Image Size Setting -->
+      <div class="entry">
+        <!-- Icon -->
+        <div class="material-cont">
+          <i class="material-icons md-24 md-light">photo_size_select_large</i>
+        </div>
+        <!-- Collapseable Text -->
+        <span class="text open">
+          Image Size
+        </span>
+        <!-- Input -->
+        <div class="input">
+          <select id="image-size"></select>
+        </div>
+      </div>
+
+      <!-- Image Orientation Setting -->
+      <div class="entry">
+        <!-- Icon -->
+        <div class="material-cont">
+          <i class="material-icons md-24 md-light">nature_people</i>
+        </div>
+        <!-- Collapseable Text -->
+        <span class="text open">
+          Image Orientation
+        </span>
+        <!-- Input -->
+        <div class="input">
+          <select id="image-orientation"></select>
+        </div>
+      </div>
+
+      <!-- Grid Size Setting -->
+      <div class="entry">
+        <!-- Icon -->
+        <div class="material-cont">
+          <i class="material-icons md-24 md-light">grid_on</i>
+        </div>
+        <!-- Collapseable Text -->
+        <span class="text open">
+          Grid Size
+        </span>
+        <!-- Input -->
+        <div class="input">
+          <input min="1" type="number" id="grid-rows">
+          <p>x</p>
+          <input min="1" type="number" id="grid-cols">
+        </div>
+      </div>
+
+      <!-- Border Top Setting -->
+      <div class="entry">
+        <!-- Icon -->
+        <div class="material-cont">
+          <i class="material-icons md-24 md-light">line_weight</i>
+        </div>
+        <!-- Collapseable Text -->
+        <span class="text open">
+          Border Top
+        </span>
+        <!-- Input -->
+        <div class="input">
+          <input min="0" type="number" id="border-top-size">
+          <p>px</p>
+        </div>
+      </div>
+
+      <!-- Border Right Setting -->
+      <div class="entry">
+        <!-- Icon -->
+        <div class="material-cont"></div>
+        <!-- Collapseable Text -->
+        <span class="text open">
+          Border Right
+        </span>
+        <!-- Input -->
+        <div class="input">
+          <input min="0" type="number" id="border-right-size">
+          <p>px</p>
+        </div>
+      </div>
+
+      <!-- Border Bottom Setting -->
+      <div class="entry">
+        <!-- Icon -->
+        <div class="material-cont"></div>
+        <!-- Collapseable Text -->
+        <span class="text open">
+          Border Bottom
+        </span>
+        <!-- Input -->
+        <div class="input">
+          <input min="0" type="number" id="border-bottom-size">
+          <p>px</p>
+        </div>
+      </div>
+
+      <!-- Border Left Setting -->
+      <div class="entry">
+        <!-- Icon -->
+        <div class="material-cont"></div>
+        <!-- Collapseable Text -->
+        <span class="text open">
+          Border Left
+        </span>
+        <!-- Input -->
+        <div class="input">
+          <input min="0" type="number" id="border-left-size">
+          <p>px</p>
+        </div>
+      </div>
+
+      <!-- Border Colour Setting -->
+      <div class="entry">
+        <!-- Icon -->
+        <div class="material-cont">
+          <i class="material-icons md-24 md-light">border_color</i>
+        </div>
+        <!-- Collapseable Text -->
+        <span class="text open">
+          Border Colour
+        </span>
+        <!-- Input -->
+        <div class="input">
+          <input type="color" id="border-color">
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Content Area -->
+    <div class="content content-color open">
+      <canvas id="content-display"></canvas>
+    </div>
+
+    <!-- Custom Size PopUp -->
+    <div class="custom-size sidebar-color">
+
+      <!-- Title -->
+      <div class="title title-color">
+        <span>
+          Custom Size
+        </span>
+        <!-- Custom Size Select Action -->
+        <div class="input right">
+          <select id="custom-size"></select>
+        </div>
+      </div>
+
+      <!-- Name Setting -->
+      <div class="entry">
+        <!-- Icon -->
+        <div class="material-cont">
+          <i class="material-icons md-24 md-light">title</i>
+        </div>
+        <!-- Collapseable Text -->
+        <span class="text open">
+          Name
+        </span>
+        <!-- Input -->
+        <div class="input">
+          <input type="text" id="custom-name">
+        </div>
+      </div>
+
+      <!-- Width Setting -->
+      <div class="entry">
+        <!-- Icon -->
+        <div class="material-cont">
+          <i class="material-icons md-24 md-light">settings_overscan</i>
+        </div>
+        <!-- Collapseable Text -->
+        <span class="text open">
+          Width
+        </span>
+        <!-- Input -->
+        <div class="input">
+          <input min="1" type="number" id="custom-width">
+          <p>mm</p>
+        </div>
+      </div>
+
+      <!-- Height Setting -->
+      <div class="entry">
+        <!-- Icon -->
+        <div class="material-cont"></div>
+        <!-- Collapseable Text -->
+        <span class="text open">
+          Height
+        </span>
+        <!-- Input -->
+        <div class="input">
+          <input min="1" type="number" id="custom-height">
+          <p>mm</p>
+        </div>
+      </div>
+
+      <!-- PPI Setting -->
+      <div class="entry">
+        <!-- Icon -->
+        <div class="material-cont">
+          <i class="material-icons md-24 md-light">visibility</i>
+        </div>
+        <!-- Collapseable Text -->
+        <span class="text open">
+          PPI
+        </span>
+        <!-- Input -->
+        <div class="input">
+          <input min="1" type="number" id="custom-ppi">
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="actions">
+        <!-- Save Action -->
+        <div id="custom-save" class="material-cont action wide">
+          Save
+        </div>
+        <!-- Discard Action -->
+        <div id="custom-discard" class="material-cont action wide">
+          Discard
+        </div>
+        <!-- Cancel Action -->
+        <div id="custom-cancel" class="material-cont action wide">
+          Cancel
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Error PopUp -->
+    <div id="error-view" class="custom-size sidebar-color error">
+
+      <!-- Title -->
+      <div class="title title-color error">
+        <span>
+          Error
+        </span>
+      </div>
+
+      <!-- Message -->
+      <span id="error-message" class="">
+        There has been an error, please try again.
+      </span>
+
+      <!-- Actions -->
+      <div class="actions">
+        <!-- Close Action -->
+        <div id="error-close" class="material-cont action wide error">
+          Close
+        </div>
+      </div>
+
+    </div>
+
+  </body>
+</html>

@@ -1,0 +1,278 @@
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0px;
+  padding: 0px;
+  font-size: 90%;
+}
+
+div, p { font-family: "Roboto", sans-serif; }
+
+span { display: block; padding: 8px; }
+
+option { color: black; }
+
+i {
+   -moz-user-select: -moz-none;
+   -khtml-user-select: none;
+   -webkit-user-select: none;
+   -ms-user-select: none;
+   user-select: none;
+   cursor: default;
+}
+
+#dyn-act-cont {
+  background-color: #456CAD;
+  display: none;
+  height: 56px;
+}
+#dyn-act-cont .input {
+  position: relative;
+  padding: 0px 8px;
+  width: auto;
+  height: 56px;
+  top: -8px;
+}
+#dyn-act-cont .input input[type="range"] {
+  width: calc(100% - 16px);
+  position: relative;
+  top: 6px;
+}
+#dyn-act-cont .action:hover { background-color: #4D78C2; }
+#dyn-act-cont .action:active { background-color: #5585D6; }
+
+#crop-readout {
+  position: relative;
+  top: -8px;
+}
+
+.progress.half { width: 28px; }
+.progress.anim { transition: width 1s; }
+.progress {
+  background-color: white;
+  position: absolute;
+  width: 0px;
+  height: 4px;
+  top: 0px;
+  left: 0px;
+  padding: 0px;
+}
+
+.material-cont {
+  position: relative;
+}
+
+.disabled i {
+  color: rgb(138, 138, 138) !important;
+}
+.disabled:hover {
+  background-color: transparent !important;
+}
+
+.title,
+.sidebar,
+.content,
+.actions,
+.custom-size {
+  color: white;
+  position: absolute;
+}
+
+.sidebar,
+.content { bottom: 0px; }
+
+.title { width: 100%; font-weight: 700; font-size: 100%; }
+.sidebar { font-weight: 400; left: 0px; }
+.actions, .content { right: 0px; }
+
+.title,
+.entry,
+.actions,
+.material-cont {
+  height: 56px;
+}
+
+.material-cont,
+.progress.full { width: 56px; }
+
+.sidebar.open {
+  width: 304px;
+}
+
+.sidebar {
+  width: 192px;
+}
+
+.sidebar,
+.content {
+  height: calc(100% - 56px);
+}
+
+.content.open {
+  width: calc(100% - 304px);
+}
+
+.content {
+  width: calc(100% - 192px);
+}
+
+.text.open {
+  width: 96px;
+  display: block;
+}
+
+.text {
+  display: none;
+}
+
+.title,
+.actions,
+.input,
+.content,
+.material-cont,
+.entry {
+  display: inline-flex;
+  align-items: center;
+}
+
+.right {
+  position: absolute;
+  right: 0px;
+  height: 40px;
+}
+
+.content,
+.material-cont {
+  justify-content: center;
+}
+
+.input {
+  width: 120px;
+  padding: 8px;
+}
+
+.input p { margin: 4px; }
+
+.input select,
+.input input {
+  width: 42px;
+  border: 0px;
+  color: white;
+  padding: 5px;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.input select { width: 100%; }
+
+.input input[type="color"] {
+  width: 120px;
+  height: 32px;
+  padding: 0px;
+  border: 0px;
+  background-color: rgba(0, 0, 0, 0);
+}
+
+.input input[type="text"] {
+  width: 84px;
+}
+
+.custom-size {
+  display: none;
+  width: 304px;
+  height: 340px;
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.25);
+}
+
+.custom-size.error {
+  height: auto;
+}
+
+.custom-size.visible {
+  display: block;
+}
+
+.custom-size > .title {
+  position: relative;
+}
+
+.custom-size > .actions {
+  width: 100%;
+  position: relative;
+}
+
+.action.wide {
+  width: 50%;
+}
+
+.action.wide.error { width: 100%; }
+
+.title-color   { background-color: #1F1F1F; }
+.sidebar-color { background-color: #171717; }
+.content-color { background-color: #000000; }
+.action:hover  { background-color: #2E2E2E; }
+.action:active { background-color: #454545; }
+
+.title-color.error { background-color: #CF0C30; }
+.sidebar-color.error { background-color: #BF0B2C; }
+.action.error:hover { background-color: #E30D34; }
+.action.error:active { background-color: #FC0F3A; }
+
+.material-icons.md-18 { font-size: 18px; }
+.material-icons.md-24 { font-size: 24px; }
+.material-icons.md-36 { font-size: 36px; }
+.material-icons.md-48 { font-size: 48px; }
+
+.material-icons.md-light { color: rgba(255, 255, 255, 1); }
+.material-icons.md-light.md-inactive { color: rgba(255, 255, 255, 0.3); }
+
+@font-face {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: 400;
+  src: url(extern/MaterialIcons-Regular.eot); /* For IE6-8 */
+  src: local('Material Icons'),
+       local('MaterialIcons-Regular'),
+       url(fonts/MaterialIcons-Regular.woff2) format('woff2'),
+       url(fonts/MaterialIcons-Regular.woff) format('woff'),
+       url(fonts/MaterialIcons-Regular.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Roboto'), local('Roboto-Regular'), url(fonts/Roboto-Regular.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Roboto Bold'), local('Roboto-Bold'), url(fonts/Roboto-Bold.ttf) format('truetype');
+}
+
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;  /* Preferred icon size */
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+
+  /* Support for all WebKit browsers. */
+  -webkit-font-smoothing: antialiased;
+  /* Support for Safari and Chrome. */
+  text-rendering: optimizeLegibility;
+  /* Support for Firefox. */
+  -moz-osx-font-smoothing: grayscale;
+  /* Support for IE. */
+  font-feature-settings: 'liga';
+}
