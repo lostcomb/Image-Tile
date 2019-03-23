@@ -1,9 +1,7 @@
-"use strict";
-
 /**
  * This defines the settings view.
  */
-var SettingsView = (function () {
+module.exports = (function () {
 
   /**
    * This constructs a new SettingsView object. It first sets the default values

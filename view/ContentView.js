@@ -1,11 +1,12 @@
-"use strict";
+const SelectedActionView = require("./SelectedActionView");
+const Rect = require("../model/Rect");
 
-var debug = false;
+const debug = false;
 
 /**
  * This defines the view to display the tiles.
  */
-var ContentView = (function () {
+module.exports = (function () {
   var attrs = new WeakMap();
 
   /**
@@ -29,7 +30,6 @@ var ContentView = (function () {
       calculateScale: function () {
         var content = document.getElementsByClassName("content")[0];
         var size = model.getSize();
-        var border = model.getBorder();
         this.scale = Math.min(
           (content.clientWidth * 0.95) / size.getWidth(),
           (content.clientHeight * 0.95) / size.getHeight()
@@ -116,7 +116,7 @@ var ContentView = (function () {
     });
     document.getElementsByClassName("content")[0].addEventListener(
       "click",
-      function (event) {
+      function () {
         if (attrs.get(self).selected_view.getGroups().length > 0) {
           attrs.get(self).selected_view.emptySelection();
           self.notify(model);

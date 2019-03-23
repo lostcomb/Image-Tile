@@ -1,9 +1,7 @@
-"use strict";
-
 /**
  * This defines the error view.
  */
-var ErrorView = (function () {
+module.exports = (function () {
 
   /**
    * This constructs a new ErrorView object.
