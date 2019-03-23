@@ -1,0 +1,28 @@
+{
+  "name": "image-tile",
+  "version": "1.0.0",
+  "description": "An app to make collages of images in a grid format, with varying sized borders.",
+  "main": "main.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "start": "electron .",
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lostcomb/Image-Tile.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lostcomb/Image-Tile/issues"
+  },
+  "homepage": "https://github.com/lostcomb/Image-Tile#readme",
+  "devDependencies": {
+    "electron": "^4.1.0",
+    "mocha": "^6.0.2"
+  },
+  "dependencies": {}
+}

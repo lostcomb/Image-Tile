@@ -1,13 +1,20 @@
-"use strict";
+const { app, BrowserWindow } = require('electron');
 
-/**
- * This creates all of the objects needed to run the app.
- */
-window.addEventListener("load", function () {
-  var model = new Model(defaults);
-  var content = new ContentView(model);
-  var settings = new SettingsView(model);
-  var customSize = new CustomSizeView();
-  var error = new ErrorView();
-  var controller = new Controller(model, content, settings, customSize, error);
-});
+function createWindow () {
+  const win = new BrowserWindow({ width: 800, height: 600 });
+  win.loadFile("index.html");
+}
+
+app.on("ready", createWindow);
+//chrome.app.runtime.onLaunched.addListener(function() {
+//  chrome.app.window.create('index.html', {
+//    'outerBounds': {
+//      'width': screen.availWidth * 0.6,
+//      'height': Math.min(screen.availWidth * 0.6 * (10 / 16), screen.availHeight)
+//    }
+//  }, function (window) {
+//    window.onClosed.addListener(function () {
+//      window.contentWindow.saveState();
+//    });
+//  });
+//});
