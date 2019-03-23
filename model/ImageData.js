@@ -1,10 +1,11 @@
-"use strict";
+const Rect = require("./Rect");
+const ImageFit = require("./enums/ImageFit");
 
 /**
  * This defines an object which contains the information to draw a scaled
  * image to the canvas.
  */
-var ImageData = (function () {
+module.exports = (function () {
   var attrs = new WeakMap();
 
   /**
@@ -14,7 +15,6 @@ var ImageData = (function () {
    * @param view_area the area that this image will be scaled to.
    */
   function ImageData (image, view_area) {
-    var self = this;
     var properties = {
       image: image,
       image_fit: ImageFit.CROP,
@@ -27,7 +27,7 @@ var ImageData = (function () {
       ABS_SIN: Math.abs(Math.sin(0)),
       ABS_COS: Math.abs(Math.cos(0)),
       cond: true,
-      canvas: document.createElement("canvas"),
+      canvas: undefined,
       /**
        * This method converts the specified coordinates to coordinates in the
        * unrotated image.
@@ -57,6 +57,15 @@ var ImageData = (function () {
           x: this.COS * coordinates.x - this.SIN * coordinates.y,
           y: this.COS * coordinates.y + this.SIN * coordinates.x
         };
+      },
+      /**
+       * This method returns the canvas element for this ImageData.
+       *
+       * @return the canvas object for this ImageData.
+       */
+      getCanvas: function () {
+        this.canvas = this.canvas || document.createElement("canvas");
+        return this.canvas;
       }
     };
     attrs.set(this, properties);
@@ -256,7 +265,7 @@ var ImageData = (function () {
    *              us to draw smaller when we don't need 100% scale for printing.
    */
   ImageData.prototype.prepare = function (scale) {
-    var canvas = attrs.get(this).canvas;
+    var canvas = attrs.get(this).getCanvas();
     canvas.width = attrs.get(this).view_area.getWidth() * scale;
     canvas.height = attrs.get(this).view_area.getHeight() * scale;
     var context = canvas.getContext("2d");

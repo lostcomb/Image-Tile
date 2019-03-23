@@ -1,9 +1,10 @@
-"use strict";
+const Rect = require("./Rect");
+const ImageData = require("./ImageData");
 
 /**
  * This defines a group of tiles in the user interface.
  */
-var Group = (function () {
+module.exports = (function () {
   var attrs = new WeakMap();
 
   /**

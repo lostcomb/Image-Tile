@@ -1,10 +1,14 @@
-"use strict";
+const Rect = require("./Rect");
+const ImageData = require("./ImageData");
+const Group = require("./Group");
+const ImageFit = require("./enums/ImageFit");
+const Orientation = require("./enums/Orientation");
 
 /**
  * This defines the object which contains all of the information required
  * to build up the image.
  */
-var Model = (function () {
+module.exports = (function () {
   var attrs = new WeakMap();
   var priv = new WeakMap();
 

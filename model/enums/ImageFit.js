@@ -1,9 +1,7 @@
-"use strict";
-
 /**
  * This object defines an enum for image fitting.
  */
-var ImageFit = {
+module.exports = {
   CROP: "Crop",
   SCALE: "Scale",
   MIXTURE: "Mixture"

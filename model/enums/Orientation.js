@@ -1,9 +1,7 @@
-"use strict";
-
 /**
  * This object defines an enum for orientations.
  */
-var Orientation = {
+module.exports = {
   LANDSCAPE: "Landscape",
   PORTRAIT: "Portrait"
 };
