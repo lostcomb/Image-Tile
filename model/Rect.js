@@ -1,9 +1,7 @@
-"use strict";
-
 /**
  * This defines a rectangle which is used as a bounding box.
  */
-var Rect = (function () {
+module.exports = (function () {
   var attrs = new WeakMap();
 
   /**
