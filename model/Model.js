@@ -3,6 +3,7 @@ const ImageData = require("./ImageData");
 const Group = require("./Group");
 const ImageFit = require("./enums/ImageFit");
 const Orientation = require("./enums/Orientation");
+const defaults = require("../defaults");
 
 /**
  * This defines the object which contains all of the information required
