@@ -1,20 +1,26 @@
-const { app, BrowserWindow } = require('electron');
+const electron = require("electron");
+const {app, BrowserWindow} = electron;
 
-function createWindow () {
-  const win = new BrowserWindow({ width: 800, height: 600 });
-  win.loadFile("index.html");
+function _create_window () {
+  const window = new BrowserWindow({
+    ..._get_window_size(),
+    icon: __dirname + "/icons/icon.ico",
+    webPreferences: {nodeIntegration: true}
+  });
+  window.loadFile("index.html");
+
+  window.on("close", function () {
+    window.webContents.executeJavaScript("window.saveState();");
+  });
 }
 
-app.on("ready", createWindow);
-//chrome.app.runtime.onLaunched.addListener(function() {
-//  chrome.app.window.create('index.html', {
-//    'outerBounds': {
-//      'width': screen.availWidth * 0.6,
-//      'height': Math.min(screen.availWidth * 0.6 * (10 / 16), screen.availHeight)
-//    }
-//  }, function (window) {
-//    window.onClosed.addListener(function () {
-//      window.contentWindow.saveState();
-//    });
-//  });
-//});
+function _get_window_size() {
+  const display_size = electron.screen.getPrimaryDisplay().size;
+  const width = display_size.width * 0.6;
+  return {
+    width: width,
+    height: Math.min(width * (10/16), display_size.height)
+  };
+}
+
+app.on("ready", _create_window);
