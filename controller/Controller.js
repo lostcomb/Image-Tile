@@ -1,9 +1,10 @@
-"use strict";
+const ProgressView = require("../view/ProgressView");
+const defaults = require("../defaults");
 
 /**
  * This sets up all of the listeners for the controls in the settings pane.
  */
-var Controller = (function () {
+module.exports = (function () {
 
   /**
    * This constructs a new Controller object. This sets up all of the
@@ -522,11 +523,6 @@ var Controller = (function () {
   var initKeyboardShortcuts = function (model, saveFunc) {
     window.addEventListener("keydown", function (event) {
       var clickEvent = new MouseEvent("click", {
-        "view": window,
-        "bubbles": true,
-        "cancelable": true
-      });
-      var contextMenuEvent = new MouseEvent("contextmenu", {
         "view": window,
         "bubbles": true,
         "cancelable": true

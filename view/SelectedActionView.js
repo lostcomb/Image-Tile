@@ -1,10 +1,11 @@
-"use strict";
+const ImageFit = require("../model/enums/ImageFit");
+const ImageData = require("../model/ImageData");
 
 /**
  * This defines the actions in the top bar which show when a tile/group is
  * selected.
  */
-var SelectedActionView = (function () {
+module.exports = (function () {
   var attrs = new WeakMap();
 
   /**

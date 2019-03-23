@@ -1,9 +1,7 @@
-"use strict";
-
 /**
  * This defines the custom size view.
  */
-var CustomSizeView = (function () {
+module.exports = (function () {
 
   /**
    * This constructs a new CustomSizeView object.

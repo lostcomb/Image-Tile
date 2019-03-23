@@ -1,9 +1,7 @@
-"use strict";
-
 /**
  * This defines the progress view.
  */
-var ProgressView = (function () {
+module.exports = (function () {
   var attrs = new WeakMap();
 
   /**
