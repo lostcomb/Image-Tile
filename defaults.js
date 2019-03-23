@@ -1,8 +1,10 @@
+const Orientation = require("./model/enums/Orientation");
+
 /**
  * This defines the default values for the image-size and image-orientation
  * drop downs.
  */
-var defaults = {
+module.exports = {
   "image-size": 4,
   "image-orientation": Orientation.LANDSCAPE,
   "image-sizes": [
