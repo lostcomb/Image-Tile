@@ -3,19 +3,22 @@
   "version": "1.0.0",
   "description": "An app to make collages of images in a grid format, with varying sized borders.",
   "main": "main.js",
-  "directories": {
-    "test": "tests"
-  },
   "scripts": {
     "start": "electron .",
     "test": "mocha",
-    "format": "prettier --no-bracket-spacing --print-width 120 --tab-width 4 --write *.js **/*.js"
+    "format": "prettier --no-bracket-spacing --print-width 120 --tab-width 4 --write *.js **/*.js",
+    "pack": "build --dir",
+    "dist": "build"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/lostcomb/Image-Tile.git"
   },
-  "author": "",
+  "author": {
+    "name": "Julian Loscombe",
+    "email": "jl14910@my.bristol.ac.uk",
+    "url": "https://lostcomb.github.io/"
+  },
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/lostcomb/Image-Tile/issues"
@@ -23,8 +26,21 @@
   "homepage": "https://github.com/lostcomb/Image-Tile#readme",
   "devDependencies": {
     "electron": "^4.1.0",
+    "electron-builder": "^20.39.0",
     "mocha": "^6.0.2",
     "prettier": "^1.16.4"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "build": {
+    "appId": "com.electron.imagetile",
+    "productName": "Image Tile",
+    "linux": {
+      "target": "deb",
+      "icon": "icons/icon.icns"
+    },
+    "win": {
+      "target": "NSIS",
+      "icon": "icons/icon.ico"
+    }
+  }
 }
