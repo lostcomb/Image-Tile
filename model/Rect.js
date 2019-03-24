@@ -145,7 +145,7 @@ module.exports = (function() {
      *
      * @param object the object specifying the values to be set.
      */
-    Rect.prototype.fromObject = function(object) {
+    Rect.prototype.fromObject = async function(object) {
         attrs.delete(this);
         attrs.set(this, object);
     };

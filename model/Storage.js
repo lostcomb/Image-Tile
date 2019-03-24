@@ -141,6 +141,7 @@ module.exports = {
         const filename = await showOpenDialog(imageFilters);
         const image = new Image();
         image.src = filename;
+        await image.decode();
         return image;
     },
     settings: {

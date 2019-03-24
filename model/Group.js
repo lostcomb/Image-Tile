@@ -213,19 +213,19 @@ module.exports = (function() {
      *
      * @param object the object specifying the values to be set.
      */
-    Group.prototype.fromObject = function(object) {
+    Group.prototype.fromObject = async function(object) {
         var image_data = new ImageData();
-        image_data.fromObject(object.image_data);
+        await image_data.fromObject(object.image_data);
         attrs.get(this).image_data = image_data;
 
         var bounding_box = new Rect();
-        bounding_box.fromObject(object.bounding_box);
+        await bounding_box.fromObject(object.bounding_box);
         attrs.get(this).bounding_box = bounding_box;
 
         var tiles = [];
         for (let tile of object.tiles) {
             var new_tile = new Rect();
-            new_tile.fromObject(tile);
+            await new_tile.fromObject(tile);
             tiles.push(new_tile);
         }
         attrs.get(this).tiles = tiles;

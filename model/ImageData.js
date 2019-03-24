@@ -337,13 +337,14 @@ module.exports = (function() {
      *
      * @param object the object specifying the values to be set.
      */
-    ImageData.prototype.fromObject = function(object) {
+    ImageData.prototype.fromObject = async function(object) {
         var view_area = new Rect();
-        view_area.fromObject(object.view_area);
+        await view_area.fromObject(object.view_area);
         attrs.get(this).view_area = view_area;
         if (object.image_src) {
             var image = document.createElement("img");
             image.src = object.image_src;
+            await image.decode();
             attrs.get(this).image = image;
         }
         attrs.get(this).image_fit = object.image_fit;

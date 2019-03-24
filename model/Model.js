@@ -512,9 +512,9 @@ module.exports = (function() {
      *
      * @param object the object specifying the values to be set.
      */
-    Model.prototype.fromObject = function(object) {
+    Model.prototype.fromObject = async function(object) {
         var size = new Rect();
-        size.fromObject(object.size);
+        await size.fromObject(object.size);
         attrs.get(this).size = size;
         attrs.get(this).raw_size = object.raw_size;
 
@@ -525,7 +525,7 @@ module.exports = (function() {
         attrs.get(this).groups = [];
         for (let group of object.groups) {
             var new_group = new Group();
-            new_group.fromObject(group);
+            await new_group.fromObject(group);
             attrs.get(this).groups.push(new_group);
         }
 
@@ -579,12 +579,12 @@ module.exports = (function() {
      * This method un-does the last change, and puts it on the redo queue. If
      * there is no last change to undo, it does nothing.
      */
-    Model.prototype.undo = function() {
+    Model.prototype.undo = async function() {
         if (this.canUndo()) {
             var change = priv.get(this).undo_queue.pop();
             priv.get(this).redo_queue.push(JSON.stringify(this.toObject()));
 
-            this.fromObject(JSON.parse(change));
+            await this.fromObject(JSON.parse(change));
 
             if (window.saveState) window.saveState();
             priv.get(this).notifyObservers();
@@ -604,12 +604,12 @@ module.exports = (function() {
      * This method re-does the last un-done change, and puts it on the undo queue.
      * If there is no change to be re-done, it does nothing.
      */
-    Model.prototype.redo = function() {
+    Model.prototype.redo = async function() {
         if (this.canRedo()) {
             var change = priv.get(this).redo_queue.pop();
             priv.get(this).undo_queue.push(JSON.stringify(this.toObject()));
 
-            this.fromObject(JSON.parse(change));
+            await this.fromObject(JSON.parse(change));
 
             if (window.saveState) window.saveState();
             priv.get(this).notifyObservers();
