@@ -9,9 +9,9 @@ const defaults = require("./defaults");
 /**
  * This creates all of the objects needed to run the app.
  */
-window.addEventListener("load", function () {
-  const model = new Model(defaults);
-  const content = new ContentView(model);
-  const settings = new SettingsView(model);
-  new Controller(model, content, settings, new CustomSizeView(), new ErrorView());
+window.addEventListener("load", function() {
+    const model = new Model(defaults);
+    const content = new ContentView(model);
+    const settings = new SettingsView(model);
+    new Controller(model, content, settings, new CustomSizeView(), new ErrorView());
 });

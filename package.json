@@ -8,7 +8,8 @@
   },
   "scripts": {
     "start": "electron .",
-    "test": "mocha"
+    "test": "mocha",
+    "format": "prettier --no-bracket-spacing --print-width 120 --tab-width 4 --write *.js **/*.js"
   },
   "repository": {
     "type": "git",
@@ -22,7 +23,8 @@
   "homepage": "https://github.com/lostcomb/Image-Tile#readme",
   "devDependencies": {
     "electron": "^4.1.0",
-    "mocha": "^6.0.2"
+    "mocha": "^6.0.2",
+    "prettier": "^1.16.4"
   },
   "dependencies": {}
 }
