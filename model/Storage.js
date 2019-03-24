@@ -96,8 +96,10 @@ module.exports = {
      * @return         the name of the file to save.
      */
     saveFile: async function(filename, contents) {
-        if (!filename) {
+        if (filename === undefined) {
             filename = await showSaveDialog(fileFilters);
+        } else if (!filename) {
+            throw undefined;
         }
         await fs.writeFile(filename, contents);
         return filename;

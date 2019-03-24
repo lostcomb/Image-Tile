@@ -38,7 +38,7 @@ module.exports = (function() {
             orientation: defaults["image-orientation"]
         };
         var privs = {
-            file: undefined,
+            file: "",
             undo_queue: [],
             redo_queue: [],
             /**

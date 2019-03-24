@@ -31,7 +31,7 @@ module.exports = (function() {
                     "There was an error completing that I/O action, please try again.",
                     err.name + ": " + err.message
                 );
-                model.setFile(undefined);
+                model.setFile("");
             }
         };
 
@@ -135,17 +135,21 @@ module.exports = (function() {
                 .then(({filename, contents}) => {
                     model.discard();
                     model.setFile(filename);
-                    model.fromObject(JSON.parse(contents));
-                    model.registerObserver(saveObserver);
-                    loadProgress.end();
+                    return model.fromObject(JSON.parse(contents));
                 })
-                .catch(errorHandler);
+                .then(() => model.registerObserver(saveObserver))
+                .catch(errorHandler)
+                .finally(() => loadProgress.end());
             loadProgress.start();
         });
 
         var save = document.getElementById("save");
         save.addEventListener("click", function() {
-            saveFunc(model.getFile());
+            if (model.getFile() !== "") {
+                saveFunc(model.getFile());
+            } else {
+                saveFunc();
+            }
         });
         save.addEventListener("contextmenu", function() {
             // Perform save as operation.
