@@ -1,6 +1,7 @@
 const ProgressView = require("../view/ProgressView");
+const Orientation = require("../model/enums/Orientation");
 const defaults = require("../defaults");
-const {settings} = require("../model/Storage");
+const {settings, saveImage, loadImage, saveFile, loadFile} = require("../model/Storage");
 
 /**
  * This sets up all of the listeners for the controls in the settings pane.
@@ -30,32 +31,29 @@ module.exports = (function () {
     };
 
     var errorHandler = function (err) {
-      errorView.show(
-        "There was an error completing that I/O action, please try again.",
-        err.name + ": " + err.message
-      );
-      model.setFile("");
+      if (err) {
+        errorView.show(
+          "There was an error completing that I/O action, please try again.",
+          err.name + ": " + err.message
+        );
+        model.setFile(undefined);
+      }
     };
 
     var saveProgress = new ProgressView("save-progress");
-    var saveFunc = function (fileEntry, callback) {
-      if (chrome.runtime.lastError) return;
-      var blob = new Blob([JSON.stringify(model.toObject())], {type: "application/json"});
-      fileEntry.createWriter(function (writer) {
-        writer.onerror = errorHandler;
-        writer.onwriteend = function (e) {
-          writer.onwriteend = null;
-          writer.truncate(e.currentTarget.position);
-          model.setFile(chrome.fileSystem.retainEntry(fileEntry));
+    var saveFunc = function (filename, callback) {
+      const contents = JSON.stringify(model.toObject());
+      saveFile(filename, contents)
+        .then(actual_filename => {
+          model.setFile(actual_filename);
           if (callback) {
             callback();
           } else {
             saveProgress.end();
           }
-        };
-        if (!callback) saveProgress.start();
-        writer.write(blob);
-      }, errorHandler);
+        })
+        .catch(errorHandler);
+      if (!callback) saveProgress.start();
     };
 
     initContentView(model, contentView, saveObserver, errorView, errorHandler, saveFunc);
@@ -83,45 +81,8 @@ module.exports = (function () {
                                   errorView,
                                   errorHandler,
                                   saveFunc) {
-    var loadProgress = new ProgressView("load-progress");
-    var loadFunc = function (fileEntry) {
-      if (chrome.runtime.lastError) return;
-      model.unregisterObserver(saveObserver);
-      fileEntry.file(function (file) {
-        var reader = new FileReader();
-        reader.onerror = errorHandler;
-        reader.onloadend = function (e) {
-          try {
-            model.discard();
-            model.setFile(chrome.fileSystem.retainEntry(fileEntry));
-            model.fromObject(JSON.parse(e.target.result));
-            model.registerObserver(saveObserver);
-          } catch (err) {
-            errorView.show(
-              "The selected file is not a valid image tile state, " +
-              "it may have been corrupted.",
-              err.toString()
-            );
-            model.discard();
-          }
-          loadProgress.end();
-        };
-        loadProgress.start();
-        reader.readAsText(file);
-      });
-    };
-
     window.saveState = function (callback) {
-      chrome.fileSystem.isRestorable(model.getFile(), function (isRestorable) {
-        if (isRestorable) {
-          // Perform save operation.
-          chrome.fileSystem.restoreEntry(model.getFile(), function (fileEntry) {
-            saveFunc(fileEntry, callback);
-          });
-        } else {
-          if (callback) callback();
-        }
-      });
+      saveFunc(model.getFile(), callback);
     };
 
     // Set up the listeners for the action bar.
@@ -176,81 +137,39 @@ module.exports = (function () {
       }
     });
 
+    var loadProgress = new ProgressView("load-progress");
     var load = document.getElementById("load");
     load.addEventListener("click", function () {
-      window.saveState(function () {
-        chrome.fileSystem.chooseEntry({
-          type: "openFile",
-          accepts: [
-            {extensions: ["imagetile"]}
-          ],
-          acceptsAllTypes: false
-        }, loadFunc);
-      });
+      model.unregisterObserver(saveObserver);
+      loadFile().then(({filename, contents}) => {
+        model.discard();
+        model.setFile(filename);
+        model.fromObject(JSON.parse(contents));
+        model.registerObserver(saveObserver);
+        loadProgress.end();
+      })
+      .catch(errorHandler);
+      loadProgress.start();
     });
 
     var save = document.getElementById("save");
     save.addEventListener("click", function () {
-      chrome.fileSystem.isRestorable(model.getFile(), function (isRestorable) {
-        if (isRestorable) {
-          // Perform save operation.
-          chrome.fileSystem.restoreEntry(model.getFile(), saveFunc);
-        } else {
-          // Perform save as operation.
-          chrome.fileSystem.chooseEntry({
-            type: "saveFile",
-            accepts: [
-              {extensions: ["imagetile"]}
-            ],
-            acceptsAllTypes: false
-          }, saveFunc);
-        }
-      });
+      saveFunc(model.getFile());
     });
     save.addEventListener("contextmenu", function () {
       // Perform save as operation.
-      chrome.fileSystem.chooseEntry({
-        type: "saveFile",
-        accepts: [
-          {extensions: ["imagetile"]}
-        ],
-        acceptsAllTypes: false
-      }, saveFunc);
+      saveFunc();
     });
-
-    var getMimeType = function (filename) {
-      if (filename.endsWith(".png")) return "image/png";
-      if (filename.endsWith(".gif")) return "image/gif";
-      return "image/jpeg";
-    };
 
     var downloadProgress = new ProgressView("export-progress");
     var download = document.getElementById("export");
     download.addEventListener("click", function () {
-      chrome.fileSystem.chooseEntry({
-        type: "saveFile",
-        accepts: [
-          { mimeTypes: ["image/png"] },
-          { mimeTypes: ["image/jpeg"] },
-          { mimeTypes: ["image/gif"] }
-        ],
-        acceptsAllTypes: false
-      }, function (fileEntry) {
-        if (chrome.runtime.lastError) return;
-        var canvas = document.createElement("canvas");
-        contentView.save(model, canvas);
-        fileEntry.createWriter(function (writer) {
-          var mimeType = getMimeType(fileEntry.name);
-          writer.onerror = errorHandler;
-          writer.onwriteend = function () {
-            downloadProgress.end();
-          };
-          downloadProgress.start();
-          canvas.toBlob(function (blob) {
-            writer.write(blob);
-          }, mimeType, 1);
-        }, errorHandler);
-      });
+      const canvas = document.createElement("canvas");
+      contentView.save(model, canvas);
+      saveImage(canvas)
+        .then(() => downloadProgress.end())
+        .catch(errorHandler);
+      downloadProgress.start();
     });
 
     var print = document.getElementById("print");
@@ -300,38 +219,15 @@ module.exports = (function () {
     var imageProgress = new ProgressView("image-progress");
     var choose_image = document.getElementById("choose-image");
     choose_image.addEventListener("click", function () {
-      chrome.fileSystem.chooseEntry({
-        type: "openFile",
-        accepts: [
-          {mimeTypes: ["image/*"]}
-        ],
-        acceptsAllTypes: false
-      }, function (fileEntry) {
-        if (chrome.runtime.lastError) return;
-        model.unregisterObserver(saveObserver);
-        fileEntry.file(function (file) {
-          var reader = new FileReader();
-          reader.onerror = errorHandler;
-          reader.onloadend = function (e) {
-            try {
-              var image = new Image();
-              image.src = e.target.result;
-              model.setImage(contentView.getSelection(), image);
-              model.registerObserver(saveObserver);
-            } catch (err) {
-              errorView.show(
-                "The selected file is not an accepted image, please try " +
-                "another image format.",
-                err.toString()
-              );
-            }
-            imageProgress.end();
-            contentView.showSelectedActionView();
-          };
-          imageProgress.start();
-          reader.readAsDataURL(file);
-        });
-      });
+      loadImage()
+        .then(image => {
+          model.setImage(contentView.getSelection(), image);
+          model.registerObserver(saveObserver);
+          imageProgress.end();
+          contentView.showSelectedActionView();
+        })
+        .catch(errorHandler);
+      imageProgress.start();
     });
     var crop_scale = document.getElementById("crop-scale");
     crop_scale.addEventListener("input", function () {
@@ -525,13 +421,7 @@ module.exports = (function () {
             document.getElementById("save").dispatchEvent(clickEvent);
             break;
           case "S":
-            chrome.fileSystem.chooseEntry({
-              type: "saveFile",
-              accepts: [
-                {extensions: ["imagetile"]}
-              ],
-              acceptsAllTypes: false
-            }, saveFunc);
+            saveFunc();
             break;
           case "p":
             document.getElementById("print").dispatchEvent(clickEvent);
