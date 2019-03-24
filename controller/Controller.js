@@ -1,5 +1,6 @@
 const ProgressView = require("../view/ProgressView");
 const defaults = require("../defaults");
+const {settings} = require("../model/Storage");
 
 /**
  * This sets up all of the listeners for the controls in the settings pane.
@@ -124,13 +125,6 @@ module.exports = (function () {
     };
 
     // Set up the listeners for the action bar.
-    chrome.storage.sync.get({ "sidebar_open": true }, function (items) {
-      var sidebar = document.getElementsByClassName("sidebar")[0];
-      if (sidebar.classList.contains("open") != items.sidebar_open) {
-        toggleSidebar(sidebar);
-      }
-    });
-
     var toggleSidebar = function (sidebar) {
       var spans = sidebar.getElementsByTagName("span");
       var content = document.getElementsByClassName("content")[0];
@@ -142,12 +136,17 @@ module.exports = (function () {
       contentView.notify(model);
     };
 
+    const sidebar = document.getElementsByClassName("sidebar")[0];
+    if (sidebar.classList.contains("open") != settings.get("sidebar_open", true)) {
+      toggleSidebar(sidebar);
+    }
+
     var menu = document.getElementById("menu");
     menu.addEventListener("click", function () {
-      var sidebar = document.getElementsByClassName("sidebar")[0];
+      const sidebar = document.getElementsByClassName("sidebar")[0];
       toggleSidebar(sidebar);
-      var sidebar_open = sidebar.classList.contains("open");
-      chrome.storage.sync.set({ "sidebar_open": sidebar_open });
+      const sidebar_open = sidebar.classList.contains("open");
+      settings.set("sidebar_open", sidebar_open);
     });
 
     var undo = document.getElementById("undo");
@@ -448,48 +447,35 @@ module.exports = (function () {
        || size['height-mm'] == 0
        || size.ppi == 0) return;
 
-      chrome.storage.sync.get({"custom-sizes": []}, function (items) {
-        var selected_size = custom_size.options[custom_size.selectedIndex].data;
-        items["custom-sizes"] = items["custom-sizes"].filter(function (val) {
-          return val.name != selected_size.name;
-        });
-
-        items["custom-sizes"].push(size);
-        items["custom-sizes"].sort(function (a, b) {
-          if (a.name < b.name) return -1;
-          if (a.name > b.name) return 1;
-          return 0;
-        });
-        chrome.storage.sync.set(items, function () {
-          customSizeView.hide();
-          model.setSize(size);
-        });
-      });
+      let custom_sizes = settings.get("custom-sizes", []);
+      custom_sizes = custom_sizes.filter(item => item.name != size.name);
+      custom_sizes.push(size);
+      custom_sizes.sort((a, b) => a.name.localeCompare(b.name));
+      settings.set("custom-sizes", custom_sizes);
+      customSizeView.hide();
+      model.setSize(size);
     });
     var custom_discard = document.getElementById("custom-discard");
     custom_discard.addEventListener("click", function () {
-      chrome.storage.sync.get({"custom-sizes": []}, function (items) {
-        var selectedIndex = custom_size.selectedIndex - 1; // Sub 1 to remove "New Size...".
-        items["custom-sizes"].splice(selectedIndex, 1);
-
-        chrome.storage.sync.set(items, function () {
-          customSizeView.hide();
-          if (document.getElementById("image-size").prev ==
-              defaults["image-sizes"].length + selectedIndex) {
-            model.setSize(defaults["image-sizes"][defaults["image-size"]]);
-          }
-          settingsView.initialise(model);
-        })
-      });
+      const selectedIndex = custom_size.selectedIndex - 1; // Sub 1 to remove "New Size...".
+      const custom_sizes = settings.get("custom-sizes", []);
+      custom_sizes.splice(selectedIndex, 1);
+      settings.set("custom-sizes", custom_sizes);
+      customSizeView.hide();
+      if (document.getElementById("image-size").prev == defaults["image-sizes"].length + selectedIndex) {
+        model.setSize(defaults["image-sizes"][defaults["image-size"]]);
+      }
+      settingsView.initialise(model);
     });
     var custom_cancel = document.getElementById("custom-cancel");
     custom_cancel.addEventListener("click", function () {
       customSizeView.hide();
+      const image_size = document.getElementById("image-size");
       image_size.selectedIndex = image_size.prev;
     });
     var custom_size = document.getElementById("custom-size");
     custom_size.addEventListener("input", function () {
-      var size = custom_size.options[custom_size.selectedIndex];
+      const size = custom_size.options[custom_size.selectedIndex];
       customSizeView.setSize(size.data, size.value != "New Size");
     });
   };

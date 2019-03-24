@@ -1,3 +1,5 @@
+const {settings} = require("../model/Storage");
+
 /**
  * This defines the settings view.
  */
@@ -19,6 +21,48 @@ module.exports = (function () {
     });
   }
 
+  function equals(size1, size2) {
+    return size1["name"] == size2["name"]
+        && size1["width-mm"] == size2["width-mm"]
+        && size1["height-mm"] == size2["height-mm"]
+        && size1["ppi"] == size2["ppi"];
+  }
+
+  function initImageSizes(context, model, defaults) {
+    const image_size = document.getElementById("image-size");
+    while (image_size.firstChild) image_size.removeChild(image_size.firstChild);
+
+    const custom_sizes = settings.get("custom-sizes", []);
+    const sizes = defaults["image-sizes"].concat(custom_sizes);
+
+    for (const size of sizes) {
+      const option = document.createElement("option");
+      option.value = size.name;
+      option.data = size;
+      option.appendChild(document.createTextNode(size.name));
+      image_size.appendChild(option);
+    }
+    const option = document.createElement("option");
+    option.value = "Custom Size";
+    option.appendChild(document.createTextNode("Custom Size..."));
+    image_size.appendChild(option);
+
+    const selected = model.getRawSize();
+    if (selected) {
+      if (!sizes.find(equals.bind(null, selected))) {
+        custom_sizes.push(selected);
+        custom_sizes.sort((a, b) => a.name.localeCompare(b.name));
+        settings.set("custom-sizes", custom_sizes);
+        context.initialise(model);
+      }
+
+      image_size.selectedIndex = sizes.findIndex(equals.bind(null, selected));
+    } else {
+      image_size.selectedIndex = defaults["image_size"];
+    }
+    image_size.prev = image_size.selectedIndex;
+  }
+
   /**
    * This method iterates over the config object, setting the default values
    * of all of the inputs. It also sets their input listeners.
@@ -26,57 +70,8 @@ module.exports = (function () {
    * @param model the object containing the default values for the inputs.
    */
   SettingsView.prototype.initialise = function (model) {
-    var self = this;
     var defaults = model.getDefaults();
-
-    chrome.storage.sync.get({"custom-sizes": []}, function (items) {
-      var image_size = document.getElementById("image-size");
-      while (image_size.firstChild) image_size.removeChild(image_size.firstChild);
-      var customSizes = items["custom-sizes"];
-
-      var sizes = defaults["image-sizes"].concat(customSizes);
-      for (let size of sizes) {
-        var option = document.createElement("option");
-        option.value = size.name;
-        option.data = size;
-        option.appendChild(document.createTextNode(size.name));
-        image_size.appendChild(option);
-      }
-      var option = document.createElement("option");
-      option.value = "Custom Size";
-      option.appendChild(document.createTextNode("Custom Size..."));
-      image_size.appendChild(option);
-
-      var selected = model.getRawSize();
-      if (selected) {
-        if (!sizes.find(function (val) {
-          return val["name"] == selected["name"]
-              && val["width-mm"] == selected["width-mm"]
-              && val["height-mm"] == selected["height-mm"]
-              && val["ppi"] == selected["ppi"];
-        })) {
-          customSizes.push(selected);
-          customSizes.sort(function (a, b) {
-            if (a.name < b.name) return -1;
-            if (a.name > b.name) return 1;
-            return 0;
-          });
-          chrome.storage.sync.set({"custom-sizes": customSizes}, function () {
-            self.initialise(model);
-          });
-        }
-
-        image_size.selectedIndex = sizes.findIndex(function (val) {
-          return val["name"] == selected["name"]
-              && val["width-mm"] == selected["width-mm"]
-              && val["height-mm"] == selected["height-mm"]
-              && val["ppi"] == selected["ppi"];
-        });
-      } else {
-        image_size.selectedIndex = defaults["image_size"];
-      }
-      image_size.prev = image_size.selectedIndex;
-    });
+    initImageSizes(this, model, defaults);
 
     var image_orientation = document.getElementById("image-orientation");
     while (image_orientation.firstChild)
