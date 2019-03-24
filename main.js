@@ -7,6 +7,7 @@ function _create_window() {
         icon: __dirname + "/icons/icon.ico",
         webPreferences: {nodeIntegration: true}
     });
+    window.setMenu(null);
     window.loadFile("index.html");
 
     window.on("close", function() {
