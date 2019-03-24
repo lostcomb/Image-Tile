@@ -5,19 +5,3 @@ varying size borders. It allows you to group these sub image spaces (tiles)
 however you like, and thus gives you a lot of control.
 
 ![Arrange Images](https://raw.githubusercontent.com/lostcomb/Image-Tile/master/promotion/images/screen-shot-1.png)
-
-### Testing
-
-To run the tests, just navigate to the `test.html` page in the `tests`
-directory.
-
-### To Package
-
-Optional:
-
-* Download the latest `normal` nw.js release here: <http://nwjs.io/downloads/>
-
-* Unzip it, rename it to `nwjs-base` and put it in the root directory of the
-project.
-
-Run `ant build-nwjs` then `ant clean`.
