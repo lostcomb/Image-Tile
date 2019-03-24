@@ -139,8 +139,11 @@ module.exports = {
     loadImage: async function() {
         const imageFilters = [{name: "Images", extensions: ["png", "jpg", "jpeg", "gif"]}];
         const filename = await showOpenDialog(imageFilters);
+        const mimeType = getMimeType(filename);
+        const base64_contents = await fs.readFile(filename);
+        const contents = await fileReader("readAsDataURL", new Blob([base64_contents], {type: mimeType}));
         const image = new Image();
-        image.src = filename;
+        image.src = contents;
         await image.decode();
         return image;
     },
