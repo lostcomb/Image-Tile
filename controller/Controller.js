@@ -39,15 +39,15 @@ module.exports = (function() {
         var saveFunc = function(filename, callback) {
             const contents = JSON.stringify(model.toObject());
             saveFile(filename, contents)
-                .then(actual_filename => {
-                    model.setFile(actual_filename);
+                .then(actual_filename => model.setFile(actual_filename))
+                .catch(errorHandler)
+                .finally(() => {
                     if (callback) {
                         callback();
                     } else {
                         saveProgress.end();
                     }
-                })
-                .catch(errorHandler);
+                });
             if (!callback) saveProgress.start();
         };
 
@@ -162,8 +162,8 @@ module.exports = (function() {
             const canvas = document.createElement("canvas");
             contentView.save(model, canvas);
             saveImage(canvas)
-                .then(() => downloadProgress.end())
-                .catch(errorHandler);
+                .catch(errorHandler)
+                .finally(() => downloadProgress.end());
             downloadProgress.start();
         });
 
@@ -218,10 +218,10 @@ module.exports = (function() {
                 .then(image => {
                     model.setImage(contentView.getSelection(), image);
                     model.registerObserver(saveObserver);
-                    imageProgress.end();
                     contentView.showSelectedActionView();
                 })
-                .catch(errorHandler);
+                .catch(errorHandler)
+                .finally(() => imageProgress.end());
             imageProgress.start();
         });
         var crop_scale = document.getElementById("crop-scale");
