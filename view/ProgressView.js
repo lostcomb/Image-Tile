@@ -31,8 +31,12 @@ module.exports = (function() {
      * This method ends the animation of the progress bar.
      */
     ProgressView.prototype.end = function() {
+        const self = this;
         while (attrs.get(this).element.classList.contains("half")) attrs.get(this).element.classList.remove("half");
         attrs.get(this).element.classList.add("full");
+        setTimeout(function () {
+            attrs.get(self).element.classList.remove("full");
+        }, 1000);
     };
 
     return ProgressView;
